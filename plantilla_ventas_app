@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzas Pro - Control de Gastos</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-dark: #12141d; --card-bg: #1e212b;
+            --neon-yellow: #f8d800; --neon-blue: #00e5ff;
+            --danger-red: #ff4d4d; --text-white: #ffffff;
+            --gray-sub: #8a8a8e;
+        }
+        body { background-color: var(--bg-dark); color: var(--text-white); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
+        .dashboard { background: var(--card-bg); border-radius: 30px; padding: 30px; text-align: center; margin-bottom: 25px; border: 1px solid #333; }
+        .chart-container { width: 120px; height: 120px; margin: 0 auto 15px; border: 8px solid #2c2f3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: var(--neon-yellow); box-shadow: 0 0 15px rgba(248, 216, 0, 0.2); }
+        .nav-bar { display: flex; gap: 10px; margin-bottom: 25px; }
+        .btn-nav { flex: 1; padding: 12px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; background: #2c2f3a; color: white; }
+        .btn-nav.active { background: var(--neon-yellow); color: black; }
+        .expense-card { background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 15px; border-left: 6px solid var(--danger-red); transition: 0.3s; }
+        .expense-card.priority { border-left-color: orange; animation: pulse 2s infinite; }
+        .expense-card.paid { border-left-color: var(--neon-blue); }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 165, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); } }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 90%; max-width: 400px; border: 1px solid var(--neon-yellow); }
+        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #2c2f3a; border: 1px solid #444; border-radius: 10px; color: white; box-sizing: border-box; }
+        .btn-main { background: var(--neon-yellow); color: black; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; }
+        .profile-pic { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--neon-yellow); cursor: pointer; object-fit: cover; background: #333; }
+    </style>
+</head>
+<body>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <small id="current-month" style="color:var(--neon-yellow); text-transform: uppercase;"></small>
+            <h2 id="app-name-text" onclick="renameApp()" style="margin:0">Finanzas Personales</h2>
+        </div>
+        <input type="file" id="file-input" hidden onchange="uploadPhoto(event)">
+        <img id="user-photo" src="" class="profile-pic" onclick="document.getElementById('file-input').click()">
+    </div>
+
+    <div class="nav-bar">
+        <button id="btn-q1" class="btn-nav active" onclick="setQ(1)">1ra Q.</button>
+        <button id="btn-q2" class="btn-nav" onclick="setQ(2)">2da Q.</button>
+        <button id="btn-hist" class="btn-nav" onclick="showHistory()">Historial</button>
+    </div>
+
+    <div class="dashboard" id="dash-view">
+        <div class="chart-container" id="perc-display">0%</div>
+        <small style="color:var(--gray-sub)">PRESUPUESTO QUINCENAL</small>
+        <h1 id="budget-display" onclick="changeBudget()" style="color:var(--neon-yellow); margin:10px 0">RD$ 0.00</h1>
+        
+        <div style="display:flex; justify-content:space-around; margin-bottom: 20px;">
+            <span>🔵 Pagado<br><b id="sum-paid">RD$ 0</b></span>
+            <span>🔴 Pendiente<br><b id="sum-pend">RD$ 0</b></span>
+        </div>
+
+        <div style="border-top: 1px solid #333; padding-top: 20px;">
+            <div style="height: 180px;"><canvas id="expenseChart"></canvas></div>
+        </div>
+    </div>
+
+    <div id="list-container"></div>
+
+    <div class="dashboard" style="margin-top: 30px; border-color: var(--gray-sub); padding: 20px;">
+        <h3 style="margin-top:0">⚙️ Configuración</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button class="btn-nav" onclick="respaldoLocal()">Guardar Backup</button>
+            <input type="file" id="import-file" hidden onchange="importarBackup(event)">
+            <button class="btn-nav" onclick="document.getElementById('import-file').click()">📥 Recuperar</button>
+            <button class="btn-nav" style="grid-column: span 2; background: var(--danger-red); color: white;" onclick="resetTotal()">Borrar Todo</button>
+        </div>
+    </div>
+
+    <button class="btn-main" style="position:fixed; bottom:20px; left:5%; width:90%; z-index:100;" onclick="openModal()">+ NUEVO PAGO</button>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Nuevo Registro</h3>
+            <input type="hidden" id="edit-id">
+            <input type="text" id="in-name" placeholder="¿Qué vas a pagar?">
+            <input type="number" id="in-amt" placeholder="Monto RD$">
+            <textarea id="in-note" placeholder="Nota adicional..."></textarea>
+            <select id="in-priority">
+                <option value="normal">Prioridad Normal</option>
+                <option value="alta">Alta Prioridad</option>
+            </select>
+            <button class="btn-main" onclick="saveEntry()">GUARDAR</button>
+            <button class="btn-nav" style="width:100%; margin-top:10px" onclick="closeModal()">CANCELAR</button>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN DE VENTA: Cambia esto para cada cliente
+        const DB_NAME = 'finanzas_cliente_master_db'; // ID único para este cliente
+        
+        let data = JSON.parse(localStorage.getItem(DB_NAME)) || {
+            appName: "Finanzas Pro",
+            budget: 0,
+            photo: "",
+            items: []
+        };
+
+        let currentQ = 1;
+        let mode = 'active'; 
+        let myChart;
+
+        function init() {
+            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('current-month').innerText = meses[new Date().getMonth()] + " " + new Date().getFullYear();
+            document.getElementById('app-name-text').innerText = data.appName;
+            if(data.photo) document.getElementById('user-photo').src = data.photo;
+            render();
+        }
+
+        // ... [El resto de las funciones: render, updateChart, saveEntry, toggleDone, etc., se mantienen iguales] ...
+        // Asegúrate de usar la variable DB_NAME en todos los localStorage.setItem
+        
+        function render() {
+            const container = document.getElementById('list-container');
+            container.innerHTML = "";
+            const filtered = data.items.filter(i => mode === 'history' ? i.done : i.q === currentQ);
+            filtered.sort((a,b) => a.done - b.done);
+            filtered.forEach(item => {
+                container.innerHTML += `
+                    <div class="expense-card ${item.done ? 'paid' : ''} ${item.priority === 'alta' ? 'priority' : ''}" style="${item.done ? 'opacity: 0.6;' : ''}">
+                        <div style="display:flex; justify-content:space-between">
+                            <b style="${item.done ? 'text-decoration: line-through;' : ''}">${item.name}</b>
+                            <span style="color:var(--neon-yellow)">RD$ ${item.amt.toLocaleString()}</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:var(--gray-sub)">${item.note || ''}</p>
+                        <div style="display:flex; gap:10px; margin-top:10px">
+                            <button class="btn-nav" style="padding:6px; font-size:0.7rem;" onclick="toggleDone('${item.id}')">${item.done ? 'REABRIR' : 'SALDAR'}</button>
+                            <button class="btn-nav" style="padding:6px; font-size:0.7rem;" onclick="openEdit('${item.id}')">EDITAR</button>
+                            <button class="btn-nav" style="padding:6px; font-size:0.7rem; color:red" onclick="removeItem('${item.id}')">X</button>
+                        </div>
+                    </div>`;
+            });
+
+            const qItems = data.items.filter(i => i.q === currentQ);
+            let qPaid = 0, qPend = 0;
+            qItems.forEach(i => i.done ? qPaid += i.amt : qPend += i.amt);
+            document.getElementById('budget-display').innerText = `RD$ ${data.budget.toLocaleString()}`;
+            document.getElementById('sum-paid').innerText = `RD$ ${qPaid.toLocaleString()}`;
+            document.getElementById('sum-pend').innerText = `RD$ ${qPend.toLocaleString()}`;
+            let p = (qPaid / (qPaid + qPend)) * 100 || 0;
+            document.getElementById('perc-display').innerText = Math.round(p) + "%";
+            localStorage.setItem(DB_NAME, JSON.stringify(data));
+            updateChart();
+        }
+
+        // [Funciones de soporte iguales a la anterior...]
+        function updateChart() {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            const paid = data.items.filter(i => i.done).reduce((s, i) => s + i.amt, 0);
+            const pend = data.items.filter(i => !i.done).reduce((s, i) => s + i.amt, 0);
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [paid, pend], backgroundColor: ['#00e5ff', '#ff4d4d'], borderWidth: 0 }] }, options: { cutout: '80%', plugins: { legend: { display: false } } } });
+        }
+        function saveEntry() {
+            const id = document.getElementById('edit-id').value;
+            const obj = { id: id || Date.now().toString(), name: document.getElementById('in-name').value, amt: parseFloat(document.getElementById('in-amt').value), note: document.getElementById('in-note').value, priority: document.getElementById('in-priority').value, q: currentQ, done: false, date: new Date().toLocaleDateString() };
+            if(!obj.name || isNaN(obj.amt)) return alert("Datos incompletos");
+            if(id) { const idx = data.items.findIndex(i => i.id === id); data.items[idx] = {...data.items[idx], ...obj}; }
+            else data.items.push(obj);
+            closeModal(); render();
+        }
+        function toggleDone(id) { const item = data.items.find(i => i.id === id); item.done = !item.done; render(); }
+        function openEdit(id) { const item = data.items.find(i => i.id === id); document.getElementById('edit-id').value = item.id; document.getElementById('in-name').value = item.name; document.getElementById('in-amt').value = item.amt; document.getElementById('in-note').value = item.note; openModal(); }
+        function removeItem(id) { if(confirm("¿Borrar?")) { data.items = data.items.filter(i => i.id !== id); render(); } }
+        function openModal() { document.getElementById('addModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('addModal').style.display = 'none'; document.getElementById('edit-id').value = ""; }
+        function setQ(q) { currentQ = q; mode = 'active'; render(); }
+        function showHistory() { mode = 'history'; render(); }
+        function changeBudget() { const b = prompt("Presupuesto:", data.budget); if(b) { data.budget = parseFloat(b); render(); } }
+        function renameApp() { const n = prompt("Nombre App:", data.appName); if(n) { data.appName = n; render(); } }
+        function uploadPhoto(e) { const reader = new FileReader(); reader.onload = () => { data.photo = reader.result; document.getElementById('user-photo').src = reader.result; render(); }; reader.readAsDataURL(e.target.files[0]); }
+        function respaldoLocal() { const blob = new Blob([JSON.stringify(data)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "backup.json"; a.click(); }
+        function importarBackup(e) { const reader = new FileReader(); reader.onload = (ev) => { data = JSON.parse(ev.target.result); render(); }; reader.readAsText(e.target.files[0]); }
+        function resetTotal() { if(confirm("¿Borrar todo?")) { localStorage.removeItem(DB_NAME); location.reload(); } }
+
+        init();
+    </script>
+</body>
+</html>
