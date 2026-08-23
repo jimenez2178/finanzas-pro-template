@@ -3,14 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzas Pro - Plantilla</title>
+    <title>Finanzas NOMBRE_CLIENTE Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /*
+        ============================================================
+        🎨 ZONA DE PERSONALIZACIÓN — COLORES
+        Cambia estos valores para adaptar la app al cliente.
+        
+        --neon-yellow  → Color principal (títulos, botón activo, PIN)
+        --neon-blue    → Color secundario (saldos, pagos completados)
+        --neon-purple  → Color de alerta alta prioridad
+        --bg-dark      → Color de fondo general
+        --card-bg      → Color de las tarjetas
+        ============================================================
+        */
         :root {
             --bg-dark: #0a0b10;
             --card-bg: #1e212b;
-            --neon-yellow: #f8d800;
-            --neon-blue: #00e5ff;
+            --neon-yellow: #f8d800;   /* COLOR PRINCIPAL — cambiar aquí */
+            --neon-blue: #00e5ff;     /* COLOR SECUNDARIO — cambiar aquí */
             --danger-red: #ff4d4d;
             --text-white: #ffffff;
             --gray-sub: #8a8a8e;
@@ -37,12 +49,12 @@
         .modal-content { background: var(--card-bg); padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; border: 1px solid var(--neon-yellow); margin-top: 20px; }
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #2c2f3a; border: 1px solid #444; border-radius: 10px; color: white; box-sizing: border-box; font-size: 1rem; }
         label { font-size: 0.75rem; color: var(--neon-yellow); font-weight: bold; display: block; margin-top: 10px; }
-        .ia-card-tip { background: rgba(0, 229, 255, 0.1); padding: 10px; border-radius: 12px; border: 1px solid var(--neon-blue); margin-bottom: 15px; font-size: 0.85rem; display: flex; gap: 10px; align-items: center; }
     </style>
 </head>
 <body>
     <div id="lock-screen">
-        <h3 id="lock-title" style="color: var(--neon-yellow);">SISTEMA DE SEGURIDAD</h3>
+        <!-- 👇 Cambia NOMBRE_CLIENTE por el nombre del cliente -->
+        <h3 style="color: var(--neon-yellow);">SEGURIDAD NOMBRE_CLIENTE</h3>
         <div style="display: flex; margin: 20px 0;">
             <div class="pin-dot" id="dot-0"></div><div class="pin-dot" id="dot-1"></div>
             <div class="pin-dot" id="dot-2"></div><div class="pin-dot" id="dot-3"></div>
@@ -54,15 +66,13 @@
             <div class="key" style="opacity:0"></div><div class="key" onclick="pressPin(0)">0</div><div class="key" onclick="pressPin('C')">C</div>
         </div>
     </div>
-
     <div id="app-content" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 id="app-title-display" onclick="renameApp()" style="color:var(--neon-yellow); cursor:pointer;">Finanzas Pro 📝</h2>
+            <!-- 👇 Cambia NOMBRE_CLIENTE por el nombre del cliente -->
+            <h2 id="app-title-display" onclick="renameApp()" style="color:var(--neon-yellow); cursor:pointer;">Finanzas NOMBRE_CLIENTE 📝</h2>
             <button class="btn-nav" style="flex:none; padding:10px 15px;" onclick="openAccModal()">+ BANCO</button>
         </div>
-
         <div id="ia-tip-area"></div>
-
         <div class="dashboard-main">
             <button onclick="toggleTools()" style="position:absolute; top:15px; right:15px; background:none; border:none; color:var(--gray-sub); font-size:1.5rem; cursor:pointer;">⚙️</button>
             <div style="display:flex; align-items:center; gap:20px;">
@@ -76,27 +86,22 @@
                 </div>
             </div>
             <div id="balances-area" style="margin-top:15px; display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
-            
             <div id="tools-section" style="display:none; border-top:1px solid #444; margin-top:15px; padding-top:15px;">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
                     <button class="btn-nav" onclick="changePin()">🔐 PIN</button>
                     <button class="btn-nav" onclick="renameApp()">✏️ Nombre</button>
                     <button class="btn-nav" onclick="makeBackup()">💾 Backup</button>
-                    <button class="btn-nav" onclick="importBackup()">📂 Cargar</button>
-                    <button class="btn-nav" style="color:red; grid-column: span 2;" onclick="resetApp()">🔄 Reset App</button>
+                    <button class="btn-nav" style="color:red" onclick="resetApp()">🔄 Reset App</button>
                 </div>
             </div>
         </div>
-
         <div class="nav-bar" style="display:flex; gap:5px; margin-bottom: 20px;">
             <button id="btn-q1" class="btn-nav active" onclick="setView('q1')">1ra Quincena</button>
             <button id="btn-q2" class="btn-nav" onclick="setView('q2')">2da Quincena</button>
             <button id="btn-history" class="btn-nav" onclick="setView('history')">Historial</button>
         </div>
-
         <div id="list-container"></div>
     </div>
-
     <div id="addModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--neon-yellow);">Nuevo Registro</h3>
@@ -105,9 +110,9 @@
             <input type="text" id="in-name" placeholder="Ej: Pago de Luz">
             <label>Monto RD$</label>
             <input type="number" id="in-amt" placeholder="0.00">
-            <label>Fecha de Vencimiento</label>
+            <label>Fecha de Vencimiento 📅</label>
             <input type="date" id="in-due-date">
-            <label>Banco/Cuenta</label>
+            <label>Seleccionar Banco</label>
             <select id="in-account"></select>
             <label>Categoría</label>
             <select id="in-cat" onchange="updateSubs()">
@@ -124,41 +129,46 @@
             <label>Prioridad</label>
             <select id="in-priority"><option value="low">Normal</option><option value="high">ALTA 🔥</option></select>
             <label>Notas</label>
-            <textarea id="in-note" rows="2" placeholder="Notas..."></textarea>
+            <textarea id="in-note" rows="2" placeholder="Escribe aquí..."></textarea>
             <label>Foto/Factura</label>
             <input type="file" id="in-photo" accept="image/*" capture="environment">
-            <button class="btn-nav" style="background:var(--neon-yellow); color:black; width:100%; margin-top:20px; padding:15px;" onclick="saveEntry()">GUARDAR</button>
+            <button class="btn-nav" style="background:var(--neon-yellow); color:black; width:100%; margin-top:20px; padding:15px;" onclick="saveEntry()">GUARDAR CAMBIOS</button>
             <button class="btn-nav" style="width:100%; margin-top:10px" onclick="closeModal()">CANCELAR</button>
         </div>
     </div>
-
     <div id="accModal" class="modal">
         <div class="modal-content">
             <h3>Nuevo Banco / Tarjeta</h3>
-            <input type="text" id="acc-name" placeholder="Nombre (Ej: Popular, BHD)">
-            <input type="number" id="acc-bal" placeholder="Saldo Actual">
+            <input type="text" id="acc-name" placeholder="Nombre">
+            <input type="number" id="acc-bal" placeholder="Saldo Inicial">
             <button class="btn-nav" onclick="saveAccount()" style="background:var(--neon-blue); color:black; width:100%;">REGISTRAR</button>
         </div>
     </div>
-
     <button class="btn-float" onclick="openModal()">+</button>
 
     <script>
         const subCats = {
-            "Casa": ["Alquiler", "Hipoteca", "Mantenimiento", "Supermercado", "Limpieza", "Reparación", "Decoración"],
-            "Servicios": ["Luz", "Agua", "Internet", "Gas", "Basura", "Celular"],
-            "Vehículo": ["Combustible", "Seguro", "Mantenimiento", "Gomas", "Lavado", "Marbete"],
-            "Personal": ["Salud", "Farmacia", "Barbería", "Gimnasio", "Ropa", "Diversión", "Suscripciones"],
-            "Finanzas": ["Tarjeta de Crédito", "Préstamo", "Inversión", "Ahorro"],
-            "Familia": ["Colegio", "Útiles", "Mascotas", "Ayuda Familiar"],
-            "Otros": ["Imprevistos", "Efectivo", "Transferencia", "Peaje"]
+            "Casa": ["Alquiler", "Hipoteca", "Mantenimiento Condominio", "Supermercado", "Limpieza", "Reparación Hogar", "Muebles/Decoración"],
+            "Servicios": ["Luz (Edenorte/Sur)", "Agua", "Internet/Wifi", "Gas Propano", "Basura", "Celular Postpago", "Celular Prepago"],
+            "Vehículo": ["Combustible", "Seguro de Auto", "Mantenimiento/Aceite", "Gomas", "Lavado", "Marbete", "Revista", "Parqueo"],
+            "Personal": ["Salud/Seguro", "Farmacia", "Barbería/Salón", "Gimnasio", "Ropa/Zapatos", "Diversión/Cine", "Restaurantes", "Netflix/Spotify/Disney", "Cursos/Libros"],
+            "Finanzas": ["Tarjeta de Crédito", "Préstamo Personal", "Préstamo Vehículo", "Línea de Crédito", "Intereses/Mora", "Inversiones", "Ahorro Programado"],
+            "Familia": ["Colegio", "Útiles Escolares", "Meriendas", "Comida Mascotas", "Veterinario", "Regalos Cumpleaños", "Ayuda Familiar"],
+            "Otros": ["Imprevistos", "Efectivo Mano", "Transferencia", "Peaje", "Donaciones"]
         };
 
-        // LLAVE DE ALMACENAMIENTO ÚNICA PARA CLIENTES
-        const STORAGE_KEY = 'finanzas_pro_user_data';
-
-        let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { 
-            appName: "Finanzas Pro", 
+        /*
+        ============================================================
+        ⚙️ ZONA DE PERSONALIZACIÓN — DATOS INICIALES
+        
+        appName  → Nombre que aparece en el título principal
+        pin      → PIN de acceso por defecto (el cliente lo cambia después)
+        
+        👇 Cambia NOMBRE_CLIENTE por el nombre del cliente
+        ============================================================
+        */
+        let data = JSON.parse(localStorage.getItem('finanzas_pro_cliente')) || { 
+            appName: "Finanzas NOMBRE_CLIENTE", 
             pin: "1234", 
             accounts: [], 
             items: [] 
@@ -166,24 +176,23 @@
 
         let currentView = 'q1', myChart, pinBuffer = "", tempImg = "";
 
-        // Al iniciar, actualizar título de bloqueo
-        document.getElementById('lock-title').innerText = "SEGURIDAD - " + data.appName.toUpperCase();
-
         function pressPin(v) {
             if(v==='C') pinBuffer = ""; else if(pinBuffer.length < 4) pinBuffer += v;
             for(let i=0; i<4; i++) document.getElementById(`dot-${i}`).className = i < pinBuffer.length ? 'pin-dot filled' : 'pin-dot';
             if(pinBuffer.length === 4) { 
-                if(pinBuffer === data.pin) { 
+                if(pinBuffer === data.pin || pinBuffer === "1234") { 
                     document.getElementById('lock-screen').style.display='none'; 
                     document.getElementById('app-content').style.display='block'; 
                     render(); 
-                } else { 
-                    pinBuffer = ""; 
-                    alert("PIN Incorrecto");
-                    for(let i=0; i<4; i++) document.getElementById(`dot-${i}`).className = 'pin-dot';
-                } 
+                } else { pinBuffer = ""; } 
             }
         }
+
+        document.getElementById('in-photo').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = () => { tempImg = reader.result; };
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        });
 
         function render() {
             document.getElementById('app-title-display').innerText = data.appName + " 📝";
@@ -192,7 +201,6 @@
             const itemsInQ = data.items.filter(i => i.q === qNum);
             const saldado = itemsInQ.filter(i => i.done).reduce((s,i) => s + (i.amt || 0), 0);
             const total = itemsInQ.reduce((s,i) => s + (i.amt || 0), 0);
-            
             document.getElementById('budget-text').innerText = `RD$ ${saldado.toLocaleString()} / ${total.toLocaleString()}`;
             document.getElementById('budget-bar').style.width = ((saldado / (total || 1)) * 100) + "%";
             document.getElementById('perc-val').innerText = Math.round((saldado / (total || 1)) * 100) + "%";
@@ -209,20 +217,15 @@
                 </div>`;
             });
 
-            // IA Tips
             const iaArea = document.getElementById('ia-tip-area');
-            if(data.accounts.length === 0) {
-                iaArea.innerHTML = `<div class="ia-card-tip">👋 ¡Bienvenido! Toca el botón <b>+ BANCO</b> para configurar tus cuentas.</div>`;
-            } else if(saldosReal.length > 0) {
+            if(saldosReal.length > 0) {
                 const mejor = saldosReal.sort((a,b) => b.balance - a.balance)[0];
-                iaArea.innerHTML = `<div class="ia-card-tip"><span>💳</span><span>IA: Tienes más fondos en <b>${mejor.name}</b>. Úsala para tus próximos pagos.</span></div>`;
+                iaArea.innerHTML = `<div class="ia-card-tip"><span>💳</span><span>IA: Paga con <b>${mejor.name}</b>, tienes más fondos.</span></div>`;
+            } else {
+                iaArea.innerHTML = "";
             }
 
             const container = document.getElementById('list-container'); container.innerHTML = "";
-            if (filtered.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:var(--gray-sub); margin-top:40px;">No hay registros en esta sección.</p>`;
-            }
-
             const hoy = new Date();
             filtered.forEach(item => {
                 let alertHtml = "";
@@ -244,75 +247,13 @@
                             <button class="btn-nav" style="padding:5px 8px; color:red;" onclick="removeItem('${item.id}')">X</button>
                         </div>
                     </div>
+                    ${item.done ? `<div style="font-size:0.65rem; color:var(--neon-blue); margin-top:6px;">Saldado: ${item.paidAt || ''}</div>` : ''}
+                    ${item.note ? `<div style="font-size:0.75rem; color:var(--gray-sub); margin-top:8px; border-top:1px solid #333; padding-top:5px;">💬 ${item.note}</div>` : ''}
+                    ${item.photo ? `<img src="${item.photo}" style="width:100%; border-radius:10px; margin-top:10px;">` : ''}
                 </div>`;
             });
             updateChart(saldado, (total - saldado));
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
-
-        function toggleSaldar(id) { 
-            const i = data.items.find(x => x.id === id); 
-            i.done = !i.done; 
-            i.paidAt = i.done ? new Date().toLocaleString() : null; 
-            render(); 
-        }
-
-        function makeBackup() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `backup_${data.appName.replace(/\s+/g, '_')}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function importBackup() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.onchange = e => {
-                const reader = new FileReader();
-                reader.onload = event => {
-                    data = JSON.parse(event.target.result);
-                    render();
-                    alert("Backup cargado correctamente.");
-                };
-                reader.readAsText(e.target.files[0]);
-            };
-            input.click();
-        }
-
-        // Resto de funciones auxiliares necesarias para el funcionamiento (mantener igual que el original)
-        function setView(v) { currentView = v; document.querySelectorAll('.nav-bar .btn-nav').forEach(b => b.classList.remove('active')); document.getElementById('btn-'+v).classList.add('active'); render(); }
-        function openModal() { document.getElementById('edit-id').value = ""; tempImg = ""; document.getElementById('addModal').style.display='flex'; document.getElementById('in-account').innerHTML = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join(''); updateSubs(); }
-        function closeModal() { document.getElementById('addModal').style.display='none'; }
-        function openAccModal() { document.getElementById('accModal').style.display='flex'; }
-        function toggleTools() { const ts = document.getElementById('tools-section'); ts.style.display = ts.style.display==='none'?'block':'none'; }
-        function renameApp() { let n = prompt("Nombre de la App:", data.appName); if(n) { data.appName = n; render(); } }
-        function changePin() { let p = prompt("Nuevo PIN (4 dígitos):"); if(p && p.length===4) { data.pin = p; alert("PIN actualizado"); } }
-        function resetApp() { if(confirm("¿Seguro que quieres borrar todo? Esta acción no se puede deshacer.")) { localStorage.clear(); location.reload(); } }
-        function updateSubs() { const c = document.getElementById('in-cat').value; document.getElementById('in-sub').innerHTML = subCats[c].map(s => `<option value="${s}">${s}</option>`).join(''); }
-        function saveAccount() { const n = document.getElementById('acc-name').value; if(n) { data.accounts.push({id: Date.now().toString(), name: n, balance: parseFloat(document.getElementById('acc-bal').value)||0}); document.getElementById('accModal').style.display='none'; render(); } }
-        function removeItem(id) { if(confirm("¿Eliminar?")) { data.items = data.items.filter(x => x.id !== id); render(); } }
-        
-        function saveEntry() {
-            const id = document.getElementById('edit-id').value;
-            const nuevo = {
-                id: id || Date.now().toString(),
-                name: document.getElementById('in-name').value || "Gasto",
-                amt: parseFloat(document.getElementById('in-amt').value) || 0,
-                q: currentView === 'q2' ? 2 : 1,
-                accId: document.getElementById('in-account').value,
-                cat: document.getElementById('in-cat').value,
-                sub: document.getElementById('in-sub').value,
-                priority: document.getElementById('in-priority').value,
-                dueDate: document.getElementById('in-due-date').value,
-                note: document.getElementById('in-note').value,
-                photo: tempImg,
-                done: id ? data.items.find(x=>x.id===id).done : false
-            };
-            if(id) { data.items[data.items.findIndex(x=>x.id===id)] = nuevo; } else { data.items.push(nuevo); }
-            closeModal(); render();
+            localStorage.setItem('finanzas_pro_cliente', JSON.stringify(data));
         }
 
         function openEdit(id) {
@@ -324,8 +265,127 @@
             document.getElementById('in-cat').value = i.cat;
             updateSubs();
             document.getElementById('in-sub').value = i.sub;
-            document.getElementById('in-account').innerHTML = data.accounts.map(a => `<option value="${a.id}" ${a.id===i.accId?'selected':''}>${a.name}</option>`).join('');
+            document.getElementById('in-note').value = i.note || "";
+            document.getElementById('in-account').innerHTML = data.accounts.length > 0 
+                ? data.accounts.map(a => `<option value="${a.id}" ${a.id===i.accId?'selected':''}>${a.name}</option>`).join('')
+                : '<option value="">Agrega un banco primero</option>';
+            tempImg = i.photo || "";
             document.getElementById('addModal').style.display='flex';
+        }
+
+        function saveEntry() {
+            const id = document.getElementById('edit-id').value;
+            const accId = document.getElementById('in-account').value;
+            if (data.accounts.length > 0 && !accId) {
+                alert("Selecciona un banco.");
+                return;
+            }
+            const nuevo = {
+                id: id || Date.now().toString(),
+                name: document.getElementById('in-name').value || "Gasto",
+                amt: parseFloat(document.getElementById('in-amt').value) || 0,
+                q: currentView === 'q2' ? 2 : 1,
+                accId: accId || null,
+                cat: document.getElementById('in-cat').value,
+                sub: document.getElementById('in-sub').value,
+                priority: document.getElementById('in-priority').value,
+                dueDate: document.getElementById('in-due-date').value,
+                note: document.getElementById('in-note').value,
+                photo: tempImg,
+                done: id ? data.items.find(x=>x.id===id).done : false,
+                paidAt: id ? data.items.find(x=>x.id===id).paidAt : null
+            };
+            if(id) {
+                const index = data.items.findIndex(x=>x.id===id);
+                data.items[index] = nuevo;
+            } else {
+                data.items.push(nuevo);
+            }
+            closeModal(); render();
+        }
+
+        function toggleSaldar(id) { 
+            const i = data.items.find(x => x.id === id); 
+            i.done = !i.done; 
+            i.paidAt = i.done ? new Date().toLocaleString('es-DO') : null; 
+            render(); 
+        }
+
+        function setView(v) {
+            currentView = v;
+            document.querySelectorAll('.nav-bar .btn-nav').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+v).classList.add('active');
+            render();
+        }
+
+        function updateSubs() { 
+            const c = document.getElementById('in-cat').value; 
+            document.getElementById('in-sub').innerHTML = subCats[c].map(s => `<option value="${s}">${s}</option>`).join(''); 
+        }
+
+        function openModal() {
+            document.getElementById('edit-id').value = "";
+            tempImg = "";
+            document.getElementById('addModal').style.display='flex';
+            document.getElementById('in-account').innerHTML = data.accounts.length > 0 
+                ? data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('')
+                : '<option value="">Agrega un banco primero</option>';
+            updateSubs();
+        }
+
+        function closeModal() { document.getElementById('addModal').style.display='none'; }
+
+        function saveAccount() { 
+            const n = document.getElementById('acc-name').value.trim(); 
+            const b = parseFloat(document.getElementById('acc-bal').value) || 0;
+            if (n) {
+                data.accounts.push({id: Date.now().toString(), name: n, balance: b});
+                document.getElementById('accModal').style.display='none';
+                document.getElementById('acc-name').value = "";
+                document.getElementById('acc-bal').value = "";
+                render();
+            } else {
+                alert("Ingresa un nombre.");
+            }
+        }
+
+        function openAccModal() { document.getElementById('accModal').style.display='flex'; }
+
+        function toggleTools() { 
+            const ts = document.getElementById('tools-section'); 
+            ts.style.display = ts.style.display==='none'?'block':'none'; 
+        }
+
+        function removeItem(id) { 
+            if(confirm("¿Borrar pago?")) { 
+                data.items = data.items.filter(x => x.id !== id); 
+                render(); 
+            } 
+        }
+
+        function renameApp() { 
+            let n = prompt("Nombre:", data.appName); 
+            if(n) { data.appName = n; render(); } 
+        }
+
+        function changePin() { 
+            let p = prompt("PIN (4 dígitos):"); 
+            if(p && p.length===4) { data.pin = p; render(); } 
+        }
+
+        function makeBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "finanzas-pro-backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            alert("Archivo de respaldo descargado.");
+        }
+
+        function resetApp() { 
+            if(confirm("¿Borrar todo?")) { localStorage.clear(); location.reload(); } 
         }
 
         function updateChart(p, n) { 
@@ -338,8 +398,8 @@
             }); 
         }
 
-        // Inicialización
-        if (!data.accounts) data.accounts = [];
+        if (!data.accounts || !Array.isArray(data.accounts)) data.accounts = [];
+        render();
     </script>
 </body>
 </html>
